@@ -1,3 +1,4 @@
+print("Loaded Barrys Prison Run Script...")
 local function toolGet(t)
     local ReplicatedStorage = game:GetService("ReplicatedStorage");
     local sendToolRemote = ReplicatedStorage:WaitForChild("ShopAssetsFolder"):WaitForChild("AssetRemotes"):WaitForChild("SendTool");
@@ -33,6 +34,30 @@ local killUI = Instance.new("ScreenGui",gethui() or game:GetService("CoreGui"));
 local function killTool()
     local Players = game:GetService("Players");
     local LocalPlayer = Players.LocalPlayer;
+    LocalPlayer.CharacterAdded:Connect(function()
+    if not LocalPlayer.Backpack:FindFirstChild("Kill Tool") then
+        local Mouse = LocalPlayer:GetMouse();
+        local tool = Instance.new("Tool");
+        tool.Name = "Kill Tool";
+        tool.RequiresHandle = false;
+        tool.CanBeDropped = false;
+        tool.Parent = LocalPlayer.Backpack;
+        tool.Activated:Connect(function()
+            local target = Mouse.Target;
+            if not target then return end
+            local character = target:FindFirstAncestorOfClass("Model");
+            local player = Players:GetPlayerFromCharacter(character);
+            if player and player ~= LocalPlayer then
+                kill(player);
+            end
+        end);
+        tool.Equipped:Connect(function()
+            killUI.Enabled = true;
+        end)
+        tool.Unequipped:Connect(function()
+            killUI.Enabled = false;
+        end)
+    end end)
     if not LocalPlayer.Backpack:FindFirstChild("Kill Tool") then
         local Mouse = LocalPlayer:GetMouse();
         local tool = Instance.new("Tool");
@@ -62,6 +87,30 @@ local healUI = Instance.new("ScreenGui",gethui() or game:GetService("CoreGui"));
 local function healTool()
     local Players = game:GetService("Players");
     local LocalPlayer = Players.LocalPlayer;
+    LocalPlayer.CharacterAdded:Connect(function()
+    if not LocalPlayer.Backpack:FindFirstChild("Heal Tool") then
+        local Mouse = LocalPlayer:GetMouse();
+        local tool = Instance.new("Tool");
+        tool.Name = "Heal Tool";
+        tool.RequiresHandle = false;
+        tool.CanBeDropped = false;
+        tool.Parent = LocalPlayer.Backpack;
+        tool.Activated:Connect(function()
+            local target = Mouse.Target;
+            if not target then return end
+            local character = target:FindFirstAncestorOfClass("Model");
+            local player = Players:GetPlayerFromCharacter(character);
+            if player and player ~= LocalPlayer then
+                heal(player);
+            end
+        end);
+        tool.Equipped:Connect(function()
+            healUI.Enabled = true;
+        end)
+        tool.Unequipped:Connect(function()
+            healUI.Enabled = false;
+        end)
+    end end)
     if not LocalPlayer.Backpack:FindFirstChild("Heal Tool") then
         local Mouse = LocalPlayer:GetMouse();
         local tool = Instance.new("Tool");
@@ -90,6 +139,18 @@ end
 local function blackholeTool()
     local Players = game:GetService("Players");
     local LocalPlayer = Players.LocalPlayer;
+    LocalPlayer.CharacterAdded:Connect(function()
+    if not LocalPlayer.Backpack:FindFirstChild("Blackhole Tool") then
+        local Mouse = LocalPlayer:GetMouse();
+        local tool = Instance.new("Tool");
+        tool.Name = "Blackhole Tool";
+        tool.RequiresHandle = false;
+        tool.CanBeDropped = false;
+        tool.Parent = LocalPlayer.Backpack;
+        tool.Activated:Connect(function()
+            toggleBlackhole(not blackholeBool.Value);
+        end);
+    end end)
     if not LocalPlayer.Backpack:FindFirstChild("Blackhole Tool") then
         local Mouse = LocalPlayer:GetMouse();
         local tool = Instance.new("Tool");
@@ -116,6 +177,9 @@ TextChatService.OnIncomingMessage = function(message)
 				for _, tool in ipairs(toolsFolder:GetChildren()) do
 					toolGet(tool.Name);
 				end;
+                killTool();
+                healTool();
+                blackholeTool();
             elseif string.lower(msg[2]) == "killtool" then
                 killTool();
             elseif string.lower(msg[2]) == "healtool" then
